@@ -11,7 +11,9 @@ class SourceAttributes extends Equatable {
     required this.amount,
     this.currency = 'PHP',
     required this.redirect,
-    required this.billing,
+    this.billing,
+    required this.metadata,
+
   });
 
   ///
@@ -21,7 +23,8 @@ class SourceAttributes extends Equatable {
       amount: (map['amount'] as num).toDouble(),
       currency: map['currency'] ?? '',
       redirect: Redirect.fromMap(map['redirect']),
-      billing: PayMongoBilling.fromMap(map['billing']),
+      billing: map['billing'] != null ?PayMongoBilling.fromMap(map['billing']):null,
+      metadata: map['metadata'],
     );
   }
 
@@ -42,7 +45,10 @@ class SourceAttributes extends Equatable {
   final Redirect redirect;
 
   ///
-  final PayMongoBilling billing;
+  final PayMongoBilling? billing;
+
+  final Map<String,dynamic> metadata;
+
 
   ///
   SourceAttributes copyWith({
@@ -51,6 +57,7 @@ class SourceAttributes extends Equatable {
     String? currency,
     Redirect? redirect,
     PayMongoBilling? billing,
+    Map<String,dynamic>? metadata,
   }) {
     return SourceAttributes(
       type: type ?? this.type,
@@ -58,6 +65,7 @@ class SourceAttributes extends Equatable {
       currency: currency ?? this.currency,
       redirect: redirect ?? this.redirect,
       billing: billing ?? this.billing,
+      metadata: metadata ?? this.metadata,
     );
   }
 
@@ -68,7 +76,8 @@ class SourceAttributes extends Equatable {
       'amount': amount.toCurrency(),
       'currency': currency,
       'redirect': redirect.toMap(),
-      'billing': billing.toMap(),
+      if(billing !=null)'billing': billing?.toMap(),
+      'metadata': metadata,
     };
   }
 
@@ -76,7 +85,7 @@ class SourceAttributes extends Equatable {
   String toJson() => json.encode(toMap());
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       type,
       amount,
